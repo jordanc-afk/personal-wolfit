@@ -1,4 +1,5 @@
 import textwrap
+import datetime
 from datetime import timedelta
 
 import pytest
@@ -121,6 +122,33 @@ def test_comments_can_be_counted(client, test_user, single_post):
     assert c1 in single_post.comments
     assert c2 in single_post.comments
     assert single_post.comment_count() == 2
+
+def test_comments_have_pretty_date_helpers(client, test_user, single_post):
+    testdate_yesterday = datetime.datetime.today() - datetime.timedelta(days = 1)
+    testdate_days_ago = datetime.datetime.today() - datetime.timedelta(days = 4)
+    testdate_weeks_ago = datetime.datetime.today() - datetime.timedelta(days = 28)
+    testdate_months_ago = datetime.datetime.today() - datetime.timedelta(days = 120)
+    testdate_years_ago = datetime.datetime.today() - datetime.timedelta(days = 1460)
+
+    c_just_now = single_post.add_comment("", test_user)
+    c_yesterday = single_post.add_comment("", test_user)
+    c_yesterday.timestamp = testdate_yesterday
+    c_days_ago = single_post.add_comment("", test_user)
+    c_days_ago.timestamp = testdate_days_ago
+    c_weeks_ago = single_post.add_comment("", test_user)
+    c_weeks_ago.timestamp = testdate_weeks_ago
+    c_months_ago = single_post.add_comment("", test_user)
+    c_months_ago.timestamp = testdate_months_ago
+    c_years_ago = single_post.add_comment("", test_user)
+    c_years_ago.timestamp = testdate_years_ago
+
+
+    assert c_just_now.pretty_timestamp() == "just now"
+    assert c_yesterday.pretty_timestamp() == "Yesterday"
+    assert c_days_ago.pretty_timestamp() == "4 days ago"
+    assert c_weeks_ago.pretty_timestamp() == "4 weeks ago"
+    assert c_months_ago.pretty_timestamp() == "4 months ago"
+    assert c_years_ago.pretty_timestamp() == "4 years ago"
 
 
 def test_comments_can_be_voted_on(client, test_user, single_post_with_comment):
