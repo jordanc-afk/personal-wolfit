@@ -124,23 +124,23 @@ def test_comments_can_be_counted(client, test_user, single_post):
     assert single_post.comment_count() == 2
 
 def test_comments_have_pretty_date_helpers(client, test_user, single_post):
-    testdate_yesterday = datetime.datetime.today() - datetime.timedelta(days = 1)
-    testdate_days_ago = datetime.datetime.today() - datetime.timedelta(days = 4)
-    testdate_weeks_ago = datetime.datetime.today() - datetime.timedelta(days = 28)
-    testdate_months_ago = datetime.datetime.today() - datetime.timedelta(days = 120)
-    testdate_years_ago = datetime.datetime.today() - datetime.timedelta(days = 1460)
+    #testdate_yesterday = datetime.datetime.today() - datetime.timedelta(days = 1)
+   # testdate_days_ago = datetime.datetime.today() - datetime.timedelta(days = 4)
+  #  testdate_weeks_ago = datetime.datetime.today() - datetime.timedelta(days = 28)
+ #   testdate_months_ago = datetime.datetime.today() - datetime.timedelta(days = 120)
+#    testdate_years_ago = datetime.datetime.today() - datetime.timedelta(days = 1460)
 
     c_just_now = single_post.add_comment("", test_user)
     c_yesterday = single_post.add_comment("", test_user)
-    c_yesterday.timestamp = testdate_yesterday
+    c_yesterday.timestamp = datetime.datetime.today() - datetime.timedelta(days = 1)
     c_days_ago = single_post.add_comment("", test_user)
-    c_days_ago.timestamp = testdate_days_ago
+    c_days_ago.timestamp = datetime.datetime.today() -datetime.timedelta(days = 4)
     c_weeks_ago = single_post.add_comment("", test_user)
-    c_weeks_ago.timestamp = testdate_weeks_ago
+    c_weeks_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 28)
     c_months_ago = single_post.add_comment("", test_user)
-    c_months_ago.timestamp = testdate_months_ago
+    c_months_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 120)
     c_years_ago = single_post.add_comment("", test_user)
-    c_years_ago.timestamp = testdate_years_ago
+    c_years_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 1460)
 
 
     assert c_just_now.pretty_timestamp() == "just now"
