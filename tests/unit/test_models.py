@@ -84,6 +84,21 @@ def test_post_vote_count_goes_up_after_voting(client, test_user, single_post):
     assert single_post.vote_count == 1
 
 
+def test_adjust_vote(single_post):
+    single_post.vote_count = None
+    single_post.adjust_vote(1)
+    assert single_post.vote_count == 1
+
+def test_down_vote(client, test_user, single_post):
+    single_post.down_vote(test_user)
+    assert single_post.vote_count == -1
+
+def test_down_vote_but_alread_voted(client, test_user, single_post):
+    single_post.down_vote(test_user)
+    single_post.down_vote(test_user)
+    assert single_post.vote_count == -1
+
+
 def test_a_user_can_only_vote_once(client, test_user, single_post):
     single_post.up_vote(test_user)
     single_post.up_vote(test_user)  # Should throw an exception
@@ -109,6 +124,11 @@ def test_categories_have_posts(client, test_user, default_category, single_post)
     assert second in default_category.posts
 
 
+def test_repr(client, test_user, single_post):
+    c = single_post.add_comment("test body", test_user)
+    assert c.__repr__() == '<Comment id 1 - test body>'
+
+
 def test_posts_have_comments(client, test_user, single_post):
     c1 = single_post.add_comment("Important insight!", test_user)
     assert c1 in single_post.comments
@@ -122,36 +142,6 @@ def test_comments_can_be_counted(client, test_user, single_post):
     assert c1 in single_post.comments
     assert c2 in single_post.comments
     assert single_post.comment_count() == 2
-
-def test_comments_have_pretty_date_helpers(client, test_user, single_post):
-    c_just_now = single_post.add_comment("", test_user)
-    #c_just_about_now = single_post.add_comment("", test_user)
-    #c_just_about_now.timestamp = 4
-    c_seconds_ago = single_post.add_comment("", test_user)
-    c_seconds_ago.timestamp = datetime.datetime.now() - datetime.timedelta(hours = 2.2)
-    c_hours_ago = single_post.add_comment("", test_user)
-    c_hours_ago.timestamp = datetime.datetime.now() - datetime.timedelta(hours = 0)
-    c_yesterday = single_post.add_comment("", test_user)
-    c_yesterday.timestamp = datetime.datetime.today() - datetime.timedelta(days = 1)
-    c_days_ago = single_post.add_comment("", test_user)
-    c_days_ago.timestamp = datetime.datetime.today() -datetime.timedelta(days = 4)
-    c_weeks_ago = single_post.add_comment("", test_user)
-    c_weeks_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 28)
-    c_months_ago = single_post.add_comment("", test_user)
-    c_months_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 120)
-    c_years_ago = single_post.add_comment("", test_user)
-    c_years_ago.timestamp = datetime.datetime.today() - datetime.timedelta(days = 1460)
-
-
-    assert c_just_now.pretty_timestamp() == "just now"
-    #assert c_just_now.pretty_timestamp() == "just about now"
-    assert c_seconds_ago.pretty_timestamp() == "7 seconds ago"
-    assert c_hours_ago.pretty_timestamp() == "7 hours ago"
-    assert c_yesterday.pretty_timestamp() == "Yesterday"
-    assert c_days_ago.pretty_timestamp() == "4 days ago"
-    assert c_weeks_ago.pretty_timestamp() == "4 weeks ago"
-    assert c_months_ago.pretty_timestamp() == "4 months ago"
-    assert c_years_ago.pretty_timestamp() == "4 years ago"
 
 
 def test_comments_can_be_voted_on(client, test_user, single_post_with_comment):
@@ -171,6 +161,33 @@ def test_user_cannot_change_vote_count_for_own_comment(
     assert c.vote_count == 1
     c.up_vote(test_user)
     assert c.vote_count == 1
+
+
+def test_comment_adjust_vote(single_post_with_comment):
+    c = single_post_with_comment.comments[0]
+    c.vote_count = None
+    c.adjust_vote(1)
+    assert c.vote_count == 1
+
+
+def test_comment_down_vote(client, single_post_with_comment):
+    c = single_post_with_comment.comments[0]
+    new_user = User(username='robot', email='robot@gmail.com')
+    db.session.add(new_user)
+    db.session.commit()
+    c.down_vote(new_user)
+    assert c.vote_count == 0
+
+
+def test_comment_down_vote_user_already_down_voted(client, single_post_with_comment):
+    c = single_post_with_comment.comments[0]
+    new_user = User(username='robot', email='robot@gmail.com')
+    db.session.add(new_user)
+    db.session.commit()
+    c.down_vote(new_user)
+    assert c.vote_count == 0
+    c.down_vote(new_user)
+    assert c.vote_count == 0
 
 
 def test_posts_can_be_just_links_without_body(client, test_user):
