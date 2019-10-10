@@ -124,13 +124,13 @@ def test_comments_can_be_counted(client, test_user, single_post):
     assert single_post.comment_count() == 2
 
 def test_comments_have_pretty_date_helpers(client, test_user, single_post):
-    #testdate_yesterday = datetime.datetime.today() - datetime.timedelta(days = 1)
-   # testdate_days_ago = datetime.datetime.today() - datetime.timedelta(days = 4)
-  #  testdate_weeks_ago = datetime.datetime.today() - datetime.timedelta(days = 28)
- #   testdate_months_ago = datetime.datetime.today() - datetime.timedelta(days = 120)
-#    testdate_years_ago = datetime.datetime.today() - datetime.timedelta(days = 1460)
-
     c_just_now = single_post.add_comment("", test_user)
+    #c_just_about_now = single_post.add_comment("", test_user)
+    #c_just_about_now.timestamp = 4
+    c_seconds_ago = single_post.add_comment("", test_user)
+    c_seconds_ago.timestamp = datetime.datetime.now() - datetime.timedelta(hours = 2.2)
+    c_hours_ago = single_post.add_comment("", test_user)
+    c_hours_ago.timestamp = datetime.datetime.now() - datetime.timedelta(hours = 0)
     c_yesterday = single_post.add_comment("", test_user)
     c_yesterday.timestamp = datetime.datetime.today() - datetime.timedelta(days = 1)
     c_days_ago = single_post.add_comment("", test_user)
@@ -144,6 +144,9 @@ def test_comments_have_pretty_date_helpers(client, test_user, single_post):
 
 
     assert c_just_now.pretty_timestamp() == "just now"
+    #assert c_just_now.pretty_timestamp() == "just about now"
+    assert c_seconds_ago.pretty_timestamp() == "7 seconds ago"
+    assert c_hours_ago.pretty_timestamp() == "7 hours ago"
     assert c_yesterday.pretty_timestamp() == "Yesterday"
     assert c_days_ago.pretty_timestamp() == "4 days ago"
     assert c_weeks_ago.pretty_timestamp() == "4 weeks ago"
