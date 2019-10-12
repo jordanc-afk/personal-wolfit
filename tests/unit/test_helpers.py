@@ -4,12 +4,17 @@ from app.helpers import less_than_day
 from app.helpers import pretty_date
 import pytest
 
+
 def test_just_now_pretty_helper():
 	assert(less_than_day(4)) == "just now"
 
 
 def test_seconds_ago_pretty_helper():
 	assert(less_than_day(14)) == "14 seconds ago"
+
+
+def test_a_minute_ago_pretty_helper():
+	assert(less_than_day(119)) == "a minute ago"
 
 
 def test_minutes_ago_pretty_helper():
