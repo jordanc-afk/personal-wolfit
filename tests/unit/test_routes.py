@@ -30,6 +30,19 @@ def test_no_posts_no_user(client):
     assert b"No entries" in response.data
 
 
+def test_user_should_be_redirected_to_register_if_not_authenticated(client):
+    response = client.get(url_for("create_post"))
+    assert response.status_code == 302
+    assert "/register" in response.headers['Location']
+
+
+def test_user_should_be_redirected_to_index_if_they_are_authenticatet(client, test_user):
+    login(client, test_user.username, PASSWORD)
+    response = client.get(url_for("register"))
+    assert response.status_code == 302
+    assert "/index" in response.headers['Location']
+
+
 def test_no_posts_logged_in_user(client, test_user):
     """
     Given a new system with just a registered user
