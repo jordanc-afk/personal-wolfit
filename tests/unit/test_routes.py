@@ -43,12 +43,15 @@ def test_user_should_be_redirected_to_index_if_they_are_authenticated(client, te
     assert "/index" in response.headers['Location']
 
 
-def test_user_should_be_redirected_to_login_if_they_post_without_being_authenticated(client, single_post):
-    response = client.get(url_for("post", post_id=single_post.id))
+def test_user_should_be_redirected_to_login_if_they_post_without_being_authenticated(client, single_post_with_comment):
+    response = client.get(url_for("post", post_id=single_post_with_comment.id))
     assert response.status_code == 200
     #assert "/index" in response.headers['Location']
     
 
+def test_user_should_be_redirected_to_login_if_they_upvote_without_being_logged_in(client, single_post_with_comment):
+    response = client.get(url_for("up_vote", post_id=single_post_with_comment.id))
+    assert response.status_code == 302
 
 def test_no_posts_logged_in_user(client, test_user):
     """
