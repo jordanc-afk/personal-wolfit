@@ -5,6 +5,9 @@ from app.helpers import pretty_date
 import pytest
 
 
+def test_just_about_now_pretty_helper():
+	assert(pretty_date(datetime.now() - timedelta(days=1))) == "just about now"
+
 def test_just_now_pretty_helper():
 	assert(less_than_day(4)) == "just now"
 
@@ -43,3 +46,11 @@ def test_months_ago():
 
 def test_years_ago():
 	assert(pretty_date(datetime.now() - timedelta(weeks=210))) == "4 years ago"
+
+
+def test_date_is_int_not_date():
+	assert(pretty_date(1)) == "49 years ago"
+
+
+def test_date_is_not_time():
+	assert(pretty_date('')) == "just now"
