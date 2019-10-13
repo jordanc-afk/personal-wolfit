@@ -5,9 +5,6 @@ from app.helpers import pretty_date
 import pytest
 
 
-def test_just_about_now_pretty_helper():
-	assert(pretty_date(datetime.now() - timedelta(days=1))) == "just about now"
-
 def test_just_now_pretty_helper():
 	assert(less_than_day(4)) == "just now"
 
