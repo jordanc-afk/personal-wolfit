@@ -43,15 +43,30 @@ def test_user_should_be_redirected_to_index_if_they_are_authenticated(client, te
     assert "/index" in response.headers['Location']
 
 
-def test_user_should_be_redirected_to_login_if_they_post_without_being_authenticated(client, single_post_with_comment):
-    response = client.get(url_for("post", post_id=single_post_with_comment.id))
+def test_user_should_be_redirected_to_login_if_they_post_without_being_authenticated(client, single_post):
+    response = client.get(url_for("post", post_id=single_post.id))
     assert response.status_code == 200
     #assert "/index" in response.headers['Location']
     
 
-def test_user_should_be_redirected_to_login_if_they_upvote_without_being_logged_in(client, single_post_with_comment):
-    response = client.get(url_for("up_vote", post_id=single_post_with_comment.id))
+def test_user_should_be_redirected_to_login_if_they_upvote_without_being_logged_in(client, single_post):
+    response = client.get(url_for("up_vote", post_id=single_post.id))
     assert response.status_code == 302
+    assert single_post.vote_count == 0
+
+
+def test_users_can_upvote_posts_while_being_logged_in(client, test_user, single_post):
+    login(client, test_user.username, PASSWORD)
+    response = client.get(url_for("up_vote", post_id=single_post.id))
+    assert response.status_code == 302
+    assert single_post.vote_count == 1
+    assert "/index" in response.headers['Location']
+
+
+def test_user_should_be_redirected_to_login_if_they_downvote_without_being_logged_in(client, single_post):
+    response = client.get(url_for("down_vote", post_id=single_post.id))
+    assert response.status_code == 302
+    assert single_post.vote_count == 0
 
 def test_no_posts_logged_in_user(client, test_user):
     """
