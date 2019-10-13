@@ -36,11 +36,18 @@ def test_user_should_be_redirected_to_register_if_not_authenticated(client):
     assert "/register" in response.headers['Location']
 
 
-def test_user_should_be_redirected_to_index_if_they_are_authenticatet(client, test_user):
+def test_user_should_be_redirected_to_index_if_they_are_authenticated(client, test_user):
     login(client, test_user.username, PASSWORD)
     response = client.get(url_for("register"))
     assert response.status_code == 302
     assert "/index" in response.headers['Location']
+
+
+def test_user_should_be_redirected_to_login_if_they_post_without_being_authenticated(client, single_post):
+    response = client.get(url_for("post", post_id=single_post.id))
+    assert response.status_code == 200
+    #assert "/index" in response.headers['Location']
+    
 
 
 def test_no_posts_logged_in_user(client, test_user):

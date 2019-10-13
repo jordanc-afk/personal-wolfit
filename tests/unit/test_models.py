@@ -1,13 +1,14 @@
 import textwrap
 import datetime
 from datetime import timedelta
+from datetime import datetime
 
 import pytest
 
 from sqlalchemy import exc
 
 from app import db
-from app.models import Category, Comment, Post, User
+from app.models import ActivityLog, Category, Comment, Post, User
 
 
 def test_new_user():
@@ -127,6 +128,16 @@ def test_categories_have_posts(client, test_user, default_category, single_post)
 def test_repr(client, test_user, single_post):
     c = single_post.add_comment("test body", test_user)
     assert c.__repr__() == '<Comment id 1 - test body>'
+
+
+def test_repr_activity_log(client, test_user, single_post):
+    a = ActivityLog(
+        id=1,
+        timestamp=datetime.now(),
+        user_id=1,
+        details="test"
+    )
+    assert a.__repr__() == '<ActivityLog id 1 - test>'
 
 
 def test_posts_have_comments(client, test_user, single_post):
