@@ -52,11 +52,13 @@ def test_user_should_be_redirected_to_login_if_they_post_without_being_authentic
 def test_user_should_be_redirected_to_login_if_they_upvote_without_being_logged_in(client, single_post):
     response = client.get(url_for("up_vote", post_id=single_post.id))
     assert response.status_code == 302
+    assert "/login" in response.headers['Location']
     assert single_post.vote_count == 0
 
 
 def test_users_can_upvote_posts_while_being_logged_in(client, test_user, single_post):
     login(client, test_user.username, PASSWORD)
+    assert single_post.vote_count == 0
     response = client.get(url_for("up_vote", post_id=single_post.id))
     assert response.status_code == 302
     assert single_post.vote_count == 1
@@ -66,7 +68,53 @@ def test_users_can_upvote_posts_while_being_logged_in(client, test_user, single_
 def test_user_should_be_redirected_to_login_if_they_downvote_without_being_logged_in(client, single_post):
     response = client.get(url_for("down_vote", post_id=single_post.id))
     assert response.status_code == 302
+    assert "/login" in response.headers['Location']
     assert single_post.vote_count == 0
+
+
+def test_user_can_down_vote_posts_while_being_logged_in(client, test_user, single_post):
+    login(client, test_user.username, PASSWORD)
+    assert single_post.vote_count == 0
+    response = client.get(url_for("down_vote", post_id=single_post.id))
+    assert response.status_code == 302
+    assert single_post.vote_count == -1
+    assert "/index" in response.headers['Location']
+
+
+def test_user_cannot_up_vote_post_comments_without_being_logged_in(client, single_post_with_comment):
+    assert single_post_with_comment.comments[0].vote_count == 1
+    response = client.get(url_for("up_vote_comment", comment_id=single_post_with_comment.comments[0].id))
+    assert response.status_code == 302
+    assert "/login" in response.headers['Location']
+    assert single_post_with_comment.comments[0].vote_count == 1
+
+
+def test_user_can_up_vote_post_comments_when_logged_in(client, test_user_2, single_post_with_comment):
+    login(client, test_user_2.username, PASSWORD)
+    assert single_post_with_comment.comments[0].vote_count == 1
+    response = client.get(url_for("up_vote_comment", comment_id=single_post_with_comment.comments[0].id))
+    assert response.status_code == 302
+    assert "/index" in response.headers['Location']
+    assert single_post_with_comment.comments[0].vote_count == 2
+
+
+
+def test_user_cannot_down_vote_post_comments_without_being_logged_in(client, single_post_with_comment):
+    assert single_post_with_comment.comments[0].vote_count == 1
+    response = client.get(url_for("down_vote_comment", comment_id=single_post_with_comment.comments[0].id))
+    assert response.status_code == 302
+    assert "/login" in response.headers['Location']
+    assert single_post_with_comment.comments[0].vote_count == 1
+
+
+def test_user_can_down_vote_post_comments_while_logged_in(client, test_user_2, single_post_with_comment):
+    login(client, test_user_2.username, PASSWORD)
+    assert single_post_with_comment.comments[0].vote_count == 1
+    response = client.get(url_for("down_vote_comment", comment_id=single_post_with_comment.comments[0].id))
+    assert response.status_code == 302
+    assert "/index" in response.headers['Location']
+    assert single_post_with_comment.comments[0].vote_count == 0
+    
 
 def test_no_posts_logged_in_user(client, test_user):
     """

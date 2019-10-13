@@ -6,11 +6,20 @@ from app import db
 from app.models import Category, Comment, Post, User
 
 USERNAME = "john"
+USERNAME_2 = "john_2"
 PASSWORD = "yoko"
 
 
 def make_test_user():
     u = User(username=USERNAME, email="john@beatles.com")
+    u.set_password(PASSWORD)
+    db.session.add(u)
+    db.session.commit()
+    return u
+
+
+def make_test_user_2():
+    u = User(username=USERNAME_2, email="john2@beatles.com")
     u.set_password(PASSWORD)
     db.session.add(u)
     db.session.commit()
@@ -58,6 +67,11 @@ def make_random_post():
 @pytest.fixture
 def test_user():
     return make_test_user()
+
+
+@pytest.fixture
+def test_user_2():
+    return make_test_user_2()
 
 
 @pytest.fixture
