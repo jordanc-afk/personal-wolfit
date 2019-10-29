@@ -188,7 +188,7 @@ class ActivityLog():
     #     return cls.query.order_by(ActivityLog.id.desc()).first()
 
     @classmethod
-    def log_event(cls, user_id, username, details, timestamp):
+    def log_event(cls, user_id, username, details):
         e = {
             "user_id": user_id,
             "username": username,
