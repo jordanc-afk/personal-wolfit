@@ -195,7 +195,7 @@ class ActivityLog():
             "details": details,
             "timestamp": str(datetime.utcnow())
         }
-        post_url = os.environ.get('ACTIVITY_LOG_MICRO') + "/api/activities/"
+        post_url = os.getenv('ACTIVITY_LOG_MICRO', 'http://0.0.0.0:5001') + "/api/activities/"
         requests.post(post_url, json=e)
 
 
