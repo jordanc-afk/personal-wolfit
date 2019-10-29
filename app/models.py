@@ -5,6 +5,7 @@ from flask_login import UserMixin
 import markdown
 
 import requests
+import os
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -194,7 +195,7 @@ class ActivityLog():
             "details": details,
             "timestamp": str(datetime.utcnow())
         }
-        post_url = os.environ.get(ACTIVITY_LOG_MICRO) + "/api/activities/"
+        post_url = os.environ.get('ACTIVITY_LOG_MICRO') + "/api/activities/"
         requests.post(post_url, json=e)
 
 
