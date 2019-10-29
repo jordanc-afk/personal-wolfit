@@ -19,6 +19,7 @@ praw = "*"
 markdown = "*"
 flask-bootstrap = "*"
 "urllib3" = "*"
+requests = "*"
 
 [dev-packages]
 

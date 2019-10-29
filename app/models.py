@@ -4,6 +4,8 @@ from flask_login import UserMixin
 
 import markdown
 
+import requests
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db, login
@@ -171,24 +173,29 @@ class Comment(db.Model):
         db.session.commit()
 
 
-class ActivityLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    details = db.Column(db.Text)
+class ActivityLog():
+    # id = db.Column(db.Integer, primary_key=True)
+    # timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    # user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    # details = db.Column(db.Text)
 
-    def __repr__(self):
-        return f"<ActivityLog id {self.id} - {self.details[:20]}>"
+    # def __repr__(self):
+    #     return f"<ActivityLog id {self.id} - {self.details[:20]}>"
+
+    # @classmethod
+    # def latest_entry(cls):
+    #     return cls.query.order_by(ActivityLog.id.desc()).first()
 
     @classmethod
-    def latest_entry(cls):
-        return cls.query.order_by(ActivityLog.id.desc()).first()
-
-    @classmethod
-    def log_event(cls, user_id, details):
-        e = cls(user_id=user_id, details=details)
-        db.session.add(e)
-        db.session.commit()
+    def log_event(cls, user_id, username, details, timestamp):
+        e = {
+            "user_id": user_id,
+            "username": username,
+            "details": details,
+            "timestamp": str(datetime.utcnow())
+        }
+        post_url = os.environ.get(ACTIVITY_LOG_MICRO) + "/api/activities/"
+        requests.post(post_url, json=e)
 
 
 @login.user_loader
