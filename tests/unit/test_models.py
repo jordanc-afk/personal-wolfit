@@ -130,14 +130,14 @@ def test_repr(client, test_user, single_post):
     assert c.__repr__() == '<Comment id 1 - test body>'
 
 
-def test_repr_activity_log(client, test_user, single_post):
-    a = ActivityLog(
-        id=1,
-        timestamp=datetime.now(),
-        user_id=1,
-        details="test"
-    )
-    assert a.__repr__() == '<ActivityLog id 1 - test>'
+# def test_repr_activity_log(client, test_user, single_post):
+#     a = ActivityLog(
+#         id=1,
+#         timestamp=datetime.now(),
+#         user_id=1,
+#         details="test"
+#     )
+#     assert a.__repr__() == '<ActivityLog id 1 - test>'
 
 
 def test_posts_have_comments(client, test_user, single_post):
