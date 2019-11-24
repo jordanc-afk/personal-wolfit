@@ -5,8 +5,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from celery import Celery, current_app
-from celery.bin import worker
+from celery import Celery
 
 
 app = Flask(__name__)
@@ -15,9 +14,8 @@ app.config.from_envvar('WOLFIT_SETTINGS')
 app.config['SQLALCHEMY_DATABASE_URI'] = config.Config.DATABASE_URI(app)
 
 
-celery = Celery('tasks', backend='redis://localhost', broker='redis://localhost')
-application = current_app._get_current_object()
-worker = worker.worker(app=app)
+celery = Celery(app.name, broker='redis://localhost')
+celery.conf.update(BROKER_URL='redis://localhost')
 
 
 db = SQLAlchemy(app)

@@ -196,7 +196,7 @@ class ActivityLog():
             "details": details,
             "timestamp": str(datetime.utcnow())
         }
-        post_activity(e)
+        post_activity.delay(e)
 
 
 @login.user_loader
