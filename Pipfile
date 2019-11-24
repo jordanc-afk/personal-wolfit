@@ -20,6 +20,7 @@ markdown = "*"
 flask-bootstrap = "*"
 "urllib3" = "*"
 requests = "*"
+celery = {file = "https://github.com/celery/celery/tarball/master"}
 
 [dev-packages]
 

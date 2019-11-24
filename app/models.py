@@ -9,8 +9,9 @@ import os
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app import db, login
+from app import db, login, app, celery
 from app.helpers import pretty_date
+
 
 user_vote = db.Table(
     "user_vote",
@@ -195,10 +196,16 @@ class ActivityLog():
             "details": details,
             "timestamp": str(datetime.utcnow())
         }
-        post_url = os.getenv('ACTIVITY_LOG_MICRO', 'http://0.0.0.0:8080') + "/api/activities/"
-        requests.post(post_url, json=e)
+        post_activity(e)
 
 
 @login.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+@celery.task
+def post_activity(activity):
+    url = app.config['LOGGER_URL']
+    post_url = url + "/api/activities/"
+    requests.post(post_url, json=activity)
